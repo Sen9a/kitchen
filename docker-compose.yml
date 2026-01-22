@@ -1,0 +1,29 @@
+services:
+  app:
+    container_name: kitchen-api
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: ./backend/docker/DockerFile
+    env_file:
+      - .env
+    ports:
+      - "8082:8082"
+    volumes:
+      - ./backend:/src
+  postgres:
+    restart: always
+    container_name: db
+    image: postgres:13.2
+    ports:
+      - "5040:5432"
+    environment:
+      POSTGRES_USER: kitchen
+      POSTGRES_PASSWORD: kitchen
+      POSTGRES_DB: kitchen
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
