@@ -1,16 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
-from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from typing import List
 
-from src.managers import PlaneManager
 from src.schemas.plane import Plane, PlaneCreate, PlaneUpdate, PlaneRead, PlaneDetails
 from src.services import PlaneService
+from src.validation import validate_plane
 
 router = APIRouter(prefix="/planes", tags=["planes"])
 
-@router.post("/", response_model=PlaneDetails, status_code=status.HTTP_201_CREATED)
-async def create_plane(plane: PlaneCreate, image: UploadFile = File(...)):
+@router.post("/", response_model=PlaneCreate, status_code=status.HTTP_201_CREATED)
+async def create_plane(name: str = Form(...),
+                       plane_type: int | None = Form(...),
+                       communication: int | None = Form(...),
+                       image: UploadFile = File(...)):
+    plane = PlaneCreate(name=name, type=plane_type, communication=communication)
     service = PlaneService()
-    return await service.create(plane)
+    errors = await validate_plane(plane)
+    if errors:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=errors)
+    return await service.create(plane, image)
 
 @router.get("/", response_model=List[PlaneDetails])
 async def read_planes(filter_payload: PlaneRead | None = Depends(PlaneRead)):

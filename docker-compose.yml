@@ -11,7 +11,8 @@ services:
     ports:
       - "8082:8082"
     volumes:
-      - ./backend:/src
+      - ./backend/src:/src
+      - ./static:/static
   postgres:
     restart: always
     container_name: db

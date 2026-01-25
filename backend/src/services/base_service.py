@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING, Dict, Any
 
 from pydantic import BaseModel
 
@@ -13,11 +13,15 @@ if TYPE_CHECKING:
 class BaseService:
     manager: 'BaseManager' = field(default_factory=CommunicationTypeManager)
 
+    @staticmethod
+    async def get_filter_payload(filter_payload: 'BaseModel') -> Dict[str, Any]:
+        return {"offset": filter_payload.offset if hasattr(filter_payload, "offset") else 0,
+                "limit": filter_payload.limit if hasattr(filter_payload, "limit") else 100,
+                "filters": filter_payload.model_dump(exclude={"limit", "offset"},
+                                                     exclude_unset=True)}
+
     async def get_all(self, filter_payload: 'BaseModel') -> List['BaseModel']:
-        payload_filter = {"offset": filter_payload.offset,
-                          "limit": filter_payload.limit,
-                          "filters": filter_payload.model_dump(exclude={"limit", "offset"},
-                                                               exclude_unset=True)}
+        payload_filter = await self.get_filter_payload(filter_payload)
         return await self.manager.get(**payload_filter)
 
     async def create(self, payload: 'BaseModel', image: 'UploadFile') -> Optional['BaseModel']:

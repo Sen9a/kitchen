@@ -4,10 +4,7 @@ from .communication_type import CommunicationType
 
 class PlaneBase(BaseModel):
     name: str | None = None
-
-class PlaneCreate(PlaneBase):
-    type: int
-    communication: int
+    image_url: str | None = None
 
 class PlaneUpdate(PlaneBase):
     pass
@@ -18,8 +15,11 @@ class PlaneRead(PlaneBase):
 
 class Plane(PlaneBase):
     id: int
-    image_url: str | None = None
     model_config = ConfigDict(from_attributes=True)
+
+class PlaneCreate(PlaneBase):
+    type: int
+    communication: int
 
 class PlaneDetails(Plane):
     drone_type: DroneType | None = None

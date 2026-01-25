@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     DB_NAME: str = "kitchen"
     DB_PORT: int = 5432
     DB_HOST: str = "0.0.0.0"
+    IMAGE_PATH: str = "images/"
 
     @property
     def DB_URL(self) -> str:
