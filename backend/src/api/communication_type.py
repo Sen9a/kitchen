@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List, Optional
+from typing import List
 
 from src.services import CommunicationTypeService
 from src.schemas import CommunicationType, CommunicationTypeCreate, CommunicationTypeUpdate, CommunicationTypeRead

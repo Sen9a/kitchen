@@ -24,7 +24,7 @@ class BaseService:
         payload_filter = await self.get_filter_payload(filter_payload)
         return await self.manager.get(**payload_filter)
 
-    async def create(self, payload: 'BaseModel', image: 'UploadFile') -> Optional['BaseModel']:
+    async def create(self, payload: 'BaseModel') -> Optional['BaseModel']:
         return await self.manager.create(payload.model_dump())
 
     async def get(self, drone_type_id: int):
