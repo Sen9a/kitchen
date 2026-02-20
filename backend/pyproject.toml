@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "kitchen"
+name = "src"
 version = "0.1.0"
 description = ""
 authors = ["Sen9a <sen9a1990@gmail.com>"]

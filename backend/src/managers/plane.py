@@ -18,7 +18,8 @@ class PlaneManager(BaseManager):
                  limit(limit).
                  options(
                      selectinload(self.model.drone_type),
-                     selectinload(self.model.communication_type)
+                     selectinload(self.model.communication_type),
+                     selectinload(self.model.video_type)
                  ))
         query = await self.add_filters(query, filters)
         async with self.session_factory() as session:

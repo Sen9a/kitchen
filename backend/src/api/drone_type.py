@@ -39,3 +39,4 @@ async def delete_drone_type(drone_type_id: int):
     success = await service.delete(drone_type_id)
     if not success:
         raise HTTPException(status_code=404, detail="Drone type not found")
+    return None

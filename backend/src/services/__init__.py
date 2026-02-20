@@ -3,3 +3,4 @@ from .communication_type import CommunicationTypeService
 from .plane import PlaneService
 from .user import UserService
 from .squads import SquadsService
+from .video_type import VideoTypeService

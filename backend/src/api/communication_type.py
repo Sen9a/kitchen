@@ -39,3 +39,4 @@ async def delete_communication_type(communication_type_id: int):
     success = await service.delete(communication_type_id)
     if not success:
         raise HTTPException(status_code=404, detail="Communication type not found")
+    return None

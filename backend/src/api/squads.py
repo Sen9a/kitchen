@@ -39,3 +39,4 @@ async def delete_squad(squad_id: int):
     success = await service.delete(squad_id)
     if not success:
         raise HTTPException(status_code=404, detail="Squad not found")
+    return None
