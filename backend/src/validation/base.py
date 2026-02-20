@@ -1,12 +1,11 @@
 import inspect
-from typing import List, Dict
 
 
 class BaseValidator:
     validate_pattern: str = 'validate_'
 
-    async def validate(self) -> List[Dict[str, str]] | list:
-        validation_errors: List[str] = []
+    async def validate(self) -> list[dict[str, str]]:
+        validation_errors: list[dict[str, str]] = []
         methods = [name
                    for name, func in inspect.getmembers(self, predicate=inspect.iscoroutinefunction)
                    if name.startswith(self.validate_pattern)]

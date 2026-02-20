@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, ForeignKey
@@ -25,4 +25,4 @@ class Plane(Base):
     drone_type: Mapped["DroneType"] = relationship()
     communication_type: Mapped["CommunicationType"] = relationship()
     video_type: Mapped["VideoType"] = relationship()
-    squads: Mapped[List["Squad"]] = relationship(secondary="squad_plane_association", back_populates="planes")
+    squads: Mapped[list["Squad"]] = relationship(secondary="squad_plane_association", back_populates="planes")

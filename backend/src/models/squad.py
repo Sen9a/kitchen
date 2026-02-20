@@ -2,7 +2,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Text
 from .base import Base
 from .squad_plane import SquadPlaneAssociation
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .plane import Plane
@@ -14,4 +14,4 @@ class Squad(Base):
     name: Mapped[str] = mapped_column(Text, nullable=True)
 
     # Relationship
-    planes: Mapped[List["Plane"]] = relationship(secondary=SquadPlaneAssociation.__table__, back_populates="squads")
+    planes: Mapped[list["Plane"]] = relationship(secondary=SquadPlaneAssociation.__table__, back_populates="squads")

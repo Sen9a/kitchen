@@ -1,10 +1,9 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
 
 class UserBase(BaseModel):
-    name: Optional[str] = None
-    surname: Optional[str] = None
-    role: Optional[str] = None
+    name: str | None = None
+    surname: str | None = None
+    role: str | None = None
 
 class UserCreate(UserBase):
     pass

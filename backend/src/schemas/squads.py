@@ -1,10 +1,8 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
-from .plane import Plane
 
 class SquadBase(BaseModel):
     name: str | None = None
-    device: List[Plane] = []
+    device: list["Plane"] = []
 
 class SquadCreate(SquadBase):
     pass
@@ -18,4 +16,9 @@ class SquadRead(SquadBase):
 
 class Squad(SquadBase):
     id: int
+    model_config = ConfigDict(from_attributes=True)
+
+class SquadReadPlanes(BaseModel):
+    id: int
+    name: str
     model_config = ConfigDict(from_attributes=True)

@@ -5,3 +5,4 @@ from .communication_type import (CommunicationType, CommunicationTypeRead,
                                  CommunicationTypeCreate, CommunicationTypeUpdate, CommunicationTypeBase)
 from .squads import (Squad, SquadRead, SquadCreate, SquadUpdate, SquadBase)
 from .video_type import (VideoType, VideoTypeRead, VideoTypeCreate, VideoTypeUpdate, VideoTypeBase)
+from .squads import SquadReadPlanes

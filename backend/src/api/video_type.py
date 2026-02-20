@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List
 
 from src.schemas.video_type import VideoType, VideoTypeCreate, VideoTypeUpdate, VideoTypeRead
 from src.services import VideoTypeService
@@ -17,7 +16,7 @@ async def create_video_type(video_type: VideoTypeCreate):
     return await service.create(video_type)
 
 
-@router.get("/", response_model=List[VideoType])
+@router.get("/", response_model=list[VideoType])
 async def read_video_types(filter_payload: VideoTypeRead | None = Depends(VideoTypeRead)):
     service = VideoTypeService()
     return await service.get_all(filter_payload)

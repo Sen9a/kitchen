@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
-from typing import List
 
 from src.schemas.plane import Plane, PlaneCreate, PlaneUpdate, PlaneRead, PlaneDetails, PlaneBase
 from src.services import PlaneService
@@ -12,18 +11,20 @@ async def create_plane(name: str = Form(...),
                        plane_type: int | None = Form(...),
                        communication: int | None = Form(...),
                        video_type: int | None = Form(None),
-                       image: UploadFile | None = File(None)):
+                       image: UploadFile | None = File(None),
+                       squad_id: list[int] | None = Form(None)):
     plane = PlaneCreate(name=name,
                         type=plane_type,
                         communication=communication,
-                        video_type_id=video_type)
+                        video_type_id=video_type,
+                        squads=squad_id)
     service = PlaneService()
     errors = await validate_plane(plane)
     if errors:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=errors)
     return await service.create_plane(plane, image)
 
-@router.get("/", response_model=List[PlaneDetails])
+@router.get("/", response_model=list[PlaneDetails])
 async def read_planes(filter_payload: PlaneRead | None = Depends(PlaneRead)):
     service = PlaneService()
     return await service.get_all(filter_payload)
