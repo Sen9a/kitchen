@@ -1,8 +1,9 @@
+from __future__ import annotations
 from pydantic import BaseModel, ConfigDict
+from .plane import PlaneDetails
 
 class SquadBase(BaseModel):
     name: str | None = None
-    device: list["Plane"] = []
 
 class SquadCreate(SquadBase):
     pass
@@ -22,3 +23,6 @@ class SquadReadPlanes(BaseModel):
     id: int
     name: str
     model_config = ConfigDict(from_attributes=True)
+
+class SquadDetails(Squad):
+    planes: list[PlaneDetails]

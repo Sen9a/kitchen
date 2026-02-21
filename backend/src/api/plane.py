@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from typing import List, Annotated
+
+from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form, Query
 
 from src.schemas.plane import Plane, PlaneCreate, PlaneUpdate, PlaneRead, PlaneDetails, PlaneBase
 from src.services import PlaneService
@@ -25,7 +27,7 @@ async def create_plane(name: str = Form(...),
     return await service.create_plane(plane, image)
 
 @router.get("/", response_model=list[PlaneDetails])
-async def read_planes(filter_payload: PlaneRead | None = Depends(PlaneRead)):
+async def read_planes(filter_payload: Annotated[PlaneRead, Query()]):
     service = PlaneService()
     return await service.get_all(filter_payload)
 

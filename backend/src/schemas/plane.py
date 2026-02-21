@@ -1,12 +1,12 @@
-from typing import TYPE_CHECKING
+from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from typing import Annotated
 
+from fastapi.params import Query
+from pydantic import BaseModel, ConfigDict, Field
 from .drone_type import DroneType
 from .video_type import VideoType
 
-if TYPE_CHECKING:
-    from .squads import SquadReadPlanes
 
 class PlaneBase(BaseModel):
     id: int
@@ -27,11 +27,6 @@ class PlaneCreate(BaseModel):
 class PlaneUpdate(PlaneCreate):
     pass
 
-class PlaneDetails(Plane):
-    drone_type: DroneType | None = None
-    communication_type: DroneType | None = None
-    video_type: VideoType | None = None
-    squads: list["SquadReadPlanes"]
 
 class PlaneRead(BaseModel):
     name: str | None = None
@@ -41,3 +36,12 @@ class PlaneRead(BaseModel):
     limit: int = 100
     offset: int = 0
     order_by: list[str] = []
+
+class PlaneDetails(Plane):
+    drone_type: DroneType | None = None
+    communication_type: DroneType | None = None
+    video_type: VideoType | None = None
+    squads: list[SquadReadPlanes]
+
+from .squads import SquadReadPlanes
+PlaneDetails.model_rebuild()

@@ -14,8 +14,11 @@ if TYPE_CHECKING:
 class PlaneManager(BaseManager):
     model: 'Plane'= Plane
 
-
-    async def get(self, offset: int = 0, limit: int = 100, filters: dict[str, Any] | None = None) -> list[Any]:
+    async def get(self,
+                  offset: int = 0,
+                  limit: int = 100,
+                  filters: dict[str, Any] | None = None,
+                  order_by: list[str] | None = None) -> list[Any]:
         query = (select(self.model).
                  offset(offset).
                  limit(limit).
@@ -26,13 +29,27 @@ class PlaneManager(BaseManager):
                      selectinload(self.model.squads)
                  ))
         query = await self.add_filters(query, filters)
+        if order_by:
+            for sort_field in order_by:
+                query = await self.sort_by_field(query, sort_field)
         async with self.session_factory() as session:
             result = await session.execute(query)
             return list(result.scalars().all())
 
     async def bound_squads(self, plane: Plane, squads: list['Squad']) -> Plane:
         async with self.session_factory() as session:
-            plane.squads.extend(squads)
+            await plane.squads.extend(squads)
             await session.flush()
             await session.refresh(plane)
         return plane
+
+    async def create(self, payload: dict[str, Any]) -> Any:
+        squads = payload.pop('squads', [])
+        db_obj = self.model(**payload)
+        async with self.session_factory() as session:
+            session.add(db_obj)
+            if squads:
+                db_obj.squads.extend(squads)
+            await session.flush()
+            await session.refresh(db_obj)
+        return db_obj

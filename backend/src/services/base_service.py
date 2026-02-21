@@ -16,21 +16,22 @@ class BaseService(Generic[T]):
     manager: 'BaseManager' = field(default_factory=CommunicationTypeManager)
 
     @staticmethod
-    async def get_filter_payload(filter_payload: T) -> dict[str, Any]:
+    async def get_payload(filter_payload: T) -> dict[str, Any]:
         return {"offset": filter_payload.offset if hasattr(filter_payload, "offset") else 0,
                 "limit": filter_payload.limit if hasattr(filter_payload, "limit") else 100,
-                "filters": filter_payload.model_dump(exclude={"limit", "offset"},
+                "order_by": filter_payload.order_by if hasattr(filter_payload, "order_by") else None,
+                "filters": filter_payload.model_dump(exclude={"limit", "offset", "order_by"},
                                                      exclude_unset=True)}
 
-    async def get_all(self, filter_payload: T) -> list[T]:
-        payload_filter = await self.get_filter_payload(filter_payload)
-        return await self.manager.get(**payload_filter)
+    async def get_all(self, payload: T) -> list[T]:
+        payload = await self.get_payload(payload)
+        return await self.manager.get(**payload)
 
     async def create(self, payload: T) -> T | None:
         return await self.manager.create(payload.model_dump())
 
-    async def get(self, drone_type_id: int) -> T | None:
-        filter_payload = {"filters": {"id": drone_type_id}}
+    async def get(self, id_: int) -> T | None:
+        filter_payload = {"filters": {"id": id_}}
         return next(iter(await self.manager.get(**filter_payload)), None)
 
     async def put(self, instance_id: int, payload: T) -> T | None:
