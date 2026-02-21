@@ -1,8 +1,7 @@
 from pydantic import BaseModel, ConfigDict
-from typing import Optional
 
 class CommunicationTypeBase(BaseModel):
-    name: Optional[str] = None
+    name: str | None = None
 
 class CommunicationTypeCreate(CommunicationTypeBase):
     pass

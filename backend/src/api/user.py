@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List, Optional
 
 from src.managers import UserManager
 from src.schemas.user import User, UserCreate, UserUpdate, UserRead
@@ -11,8 +10,8 @@ async def create_user(user: UserCreate):
     manager = UserManager()
     return await manager.create(user.model_dump())
 
-@router.get("/", response_model=List[User])
-async def read_users(filter_payload: Optional[UserRead] = Depends()):
+@router.get("/", response_model=list[User])
+async def read_users(filter_payload: UserRead | None = Depends(UserRead)):
     manager = UserManager()
     if filter_payload:
         return await manager.get_all(
@@ -44,3 +43,4 @@ async def delete_user(user_id: int):
     success = await manager.delete(user_id)
     if not success:
         raise HTTPException(status_code=404, detail="User not found")
+    return None

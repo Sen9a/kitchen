@@ -1,24 +1,24 @@
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 import aiofiles
 from fastapi import UploadFile
 from starlette.concurrency import run_in_threadpool
 
+from src import settings
+
 
 @dataclass
 class FilesService:
-    file_url: str = "static/uploads/"
+    file_url: Path = Path(settings.IMAGE_PATH)
 
+    async def get_file_url(self, file_name: str) -> Path:
+        return self.file_url / file_name
 
-    async def get_file_url(self, file_name: str) -> str:
-        return self.file_url + file_name
-
-    async def put_file(self, file_name: str,
-                       upload_file: UploadFile,
-                       ) -> str:
-        file = await self.get_file_url(file_name)
-        async with aiofiles.open(file, "wb") as f:
+    async def put_file(self, upload_file: UploadFile) -> Path:
+        file = await self.get_file_url(upload_file.filename)
+        async with aiofiles.open(str(file), "wb") as f:
             while content := await upload_file.read(1024 * 1024):
                 await f.write(content)
         return file

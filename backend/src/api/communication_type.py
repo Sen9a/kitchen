@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List, Optional
 
 from src.services import CommunicationTypeService
 from src.schemas import CommunicationType, CommunicationTypeCreate, CommunicationTypeUpdate, CommunicationTypeRead
@@ -12,7 +11,7 @@ async def create_communication_type(communication_type: CommunicationTypeCreate)
     service = CommunicationTypeService()
     return await service.create(communication_type)
 
-@router.get("/", response_model=List[CommunicationType])
+@router.get("/", response_model=list[CommunicationType])
 async def read_communication_types(filter_payload: CommunicationTypeRead | None = Depends(CommunicationTypeRead)):
     service = CommunicationTypeService()
     return await service.get_all(filter_payload)
@@ -39,3 +38,4 @@ async def delete_communication_type(communication_type_id: int):
     success = await service.delete(communication_type_id)
     if not success:
         raise HTTPException(status_code=404, detail="Communication type not found")
+    return None

@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Text, Integer, ForeignKey
+from sqlalchemy import Text
 from .base import Base
+from .squad_plane import SquadPlaneAssociation
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -11,7 +12,6 @@ class Squad(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(Text, nullable=True)
-    device: Mapped[int] = mapped_column(ForeignKey("planes.id"), nullable=True)
 
     # Relationship
-    plane: Mapped["Plane"] = relationship()
+    planes: Mapped[list["Plane"]] = relationship(secondary=SquadPlaneAssociation.__table__, back_populates="squads")

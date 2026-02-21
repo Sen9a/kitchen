@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List
 
 from src.schemas.squads import Squad, SquadCreate, SquadUpdate, SquadRead
 from src.services import SquadsService
@@ -11,7 +10,7 @@ async def create_squad(squad: SquadCreate):
     service = SquadsService()
     return await service.create(squad)
 
-@router.get("/", response_model=List[Squad])
+@router.get("/", response_model=list[Squad])
 async def read_squads(filter_payload: SquadRead | None = Depends(SquadRead)):
     service = SquadsService()
     return await service.get_all(filter_payload)
@@ -39,3 +38,4 @@ async def delete_squad(squad_id: int):
     success = await service.delete(squad_id)
     if not success:
         raise HTTPException(status_code=404, detail="Squad not found")
+    return None

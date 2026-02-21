@@ -1,4 +1,18 @@
 services:
+  frontend:
+    container_name: kitchen-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+
   app:
     container_name: kitchen-api
     depends_on:
@@ -11,7 +25,8 @@ services:
     ports:
       - "8082:8082"
     volumes:
-      - ./backend:/src
+      - ./backend/src:/app/src
+      - ./static:/static
   postgres:
     restart: always
     container_name: db

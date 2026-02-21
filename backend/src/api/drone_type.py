@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from typing import List
 
 from src.schemas.drone_type import DroneType, DroneTypeCreate, DroneTypeUpdate, DroneTypeRead
 from src.services import DroneTypeService
@@ -11,7 +10,7 @@ async def create_drone_type(drone_type: DroneTypeCreate):
     service = DroneTypeService()
     return await service.create(drone_type)
 
-@router.get("/", response_model=List[DroneType])
+@router.get("/", response_model=list[DroneType])
 async def read_drone_types(filter_payload: DroneTypeRead | None = Depends(DroneTypeRead)):
     service = DroneTypeService()
     return await service.get_all(filter_payload)
@@ -39,3 +38,4 @@ async def delete_drone_type(drone_type_id: int):
     success = await service.delete(drone_type_id)
     if not success:
         raise HTTPException(status_code=404, detail="Drone type not found")
+    return None
