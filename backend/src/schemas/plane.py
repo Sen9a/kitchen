@@ -1,12 +1,8 @@
 from __future__ import annotations
-
-from typing import Annotated
-
-from fastapi.params import Query
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 from .drone_type import DroneType
 from .video_type import VideoType
-
+from src.const import Plane as PlaneConst
 
 class PlaneBase(BaseModel):
     id: int
@@ -35,7 +31,7 @@ class PlaneRead(BaseModel):
     video_type_id: int | None = None
     limit: int = 100
     offset: int = 0
-    order_by: list[str] = []
+    order_by: list[str] = [str(PlaneConst.NAME)]
 
 class PlaneDetails(Plane):
     drone_type: DroneType | None = None

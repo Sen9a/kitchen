@@ -1,4 +1,4 @@
-from typing import List, Annotated
+from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form, Query
 
@@ -27,7 +27,7 @@ async def create_plane(name: str = Form(...),
     return await service.create_plane(plane, image)
 
 @router.get("/", response_model=list[PlaneDetails])
-async def read_planes(filter_payload: Annotated[PlaneRead, Query()]):
+async def read_planes(filter_payload: Annotated[PlaneRead, Query()]) -> list[PlaneDetails]:
     service = PlaneService()
     return await service.get_all(filter_payload)
 

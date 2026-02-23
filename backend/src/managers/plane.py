@@ -4,11 +4,9 @@ from typing import TYPE_CHECKING, Any
 from sqlalchemy.orm import selectinload
 
 from src.managers.base_manager import BaseManager
-from src.models import Plane
+from src.models import Plane, Squad
 from sqlalchemy import select
 
-if TYPE_CHECKING:
-    from src.models import Squad
 
 @dataclass
 class PlaneManager(BaseManager):
@@ -36,13 +34,6 @@ class PlaneManager(BaseManager):
             result = await session.execute(query)
             return list(result.scalars().all())
 
-    async def bound_squads(self, plane: Plane, squads: list['Squad']) -> Plane:
-        async with self.session_factory() as session:
-            await plane.squads.extend(squads)
-            await session.flush()
-            await session.refresh(plane)
-        return plane
-
     async def create(self, payload: dict[str, Any]) -> Any:
         squads = payload.pop('squads', [])
         db_obj = self.model(**payload)
@@ -53,3 +44,19 @@ class PlaneManager(BaseManager):
             await session.flush()
             await session.refresh(db_obj)
         return db_obj
+
+    async def update(self, plane_id: int, payload: dict[str, Any]) -> Any | None:
+        async with self.session_factory() as session:
+            query = select(self.model).where(self.model.id == plane_id).options(selectinload(self.model.squads))
+            result = await session.execute(query)
+            plane = result.scalar_one_or_none()
+            if payload['squads']:
+                squads = payload.pop('squads')
+                squads_db = await session.execute(select(Squad).where(Squad.id.in_(squads)))
+                squads = list(squads_db.scalars().all())
+            for key, value in payload.items():
+                setattr(plane, key, value)
+            plane.squads = squads
+            await session.flush()
+            await session.refresh(plane)
+        return plane

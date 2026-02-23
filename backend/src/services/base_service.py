@@ -35,11 +35,8 @@ class BaseService(Generic[T]):
         return next(iter(await self.manager.get(**filter_payload)), None)
 
     async def put(self, instance_id: int, payload: T) -> T | None:
-        drone_type = await self.get(instance_id)
-        if drone_type:
-            drone_type = await self.manager.update(instance_id, payload.model_dump(exclude_unset=True))
-            return drone_type
-        return None
+        obj = await self.manager.update(instance_id, payload.model_dump(exclude_unset=True))
+        return obj
 
     async def delete(self, drone_type_id: int) -> bool:
         return await self.manager.delete(drone_type_id)

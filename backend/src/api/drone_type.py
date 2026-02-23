@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated
+from fastapi import APIRouter, HTTPException, status, Query
 
 from src.schemas.drone_type import DroneType, DroneTypeCreate, DroneTypeUpdate, DroneTypeRead
 from src.services import DroneTypeService
@@ -11,7 +12,7 @@ async def create_drone_type(drone_type: DroneTypeCreate):
     return await service.create(drone_type)
 
 @router.get("/", response_model=list[DroneType])
-async def read_drone_types(filter_payload: DroneTypeRead | None = Depends(DroneTypeRead)):
+async def read_drone_types(filter_payload: Annotated[DroneTypeRead, Query()]) -> list[DroneType]:
     service = DroneTypeService()
     return await service.get_all(filter_payload)
 

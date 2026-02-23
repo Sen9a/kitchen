@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 from src.managers import PlaneManager
-from src.schemas import PlaneCreate, PlaneRead
+from src.schemas import PlaneCreate, PlaneRead, PlaneUpdate, PlaneDetails
 from src.services.base_service import BaseService
 from src.services.files_service import FilesService
 from .squads import SquadsService
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from fastapi import UploadFile
 
 @dataclass
-class PlaneService(BaseService[PlaneCreate | PlaneRead]):
+class PlaneService(BaseService[PlaneCreate | PlaneRead | PlaneUpdate | PlaneDetails]):
     manager: 'PlaneManager' = field(default_factory=PlaneManager)
     file_service: FilesService = field(default_factory=FilesService)
 
@@ -28,5 +28,5 @@ class PlaneService(BaseService[PlaneCreate | PlaneRead]):
         filters = {"filters": {"name": name},
                    "limit": 1,
                    "offset": 0}
-        result = await self.manager.get(**filters)
+        result = await super().get_all(**filters)
         return next(iter(result), None)

@@ -158,17 +158,12 @@ class BaseManager:
             return list(result.scalars().all())
 
 
-    async def update(self, obj_id: int, payload: dict[str, Any]) -> Any | None:
+    async def update(self, obj_id: Any, payload: dict[str, Any]) -> Any | None:
         async with self.session_factory() as session:
             query = select(self.model).where(self.model.id == obj_id)
-            result = await session.execute(query)
-            db_obj = result.scalar_one_or_none()
-            if not db_obj:
-                return None
-            
+            db_obj = await session.execute(query)
             for key, value in payload.items():
                 setattr(db_obj, key, value)
-            
             await session.flush()
             await session.refresh(db_obj)
         return db_obj

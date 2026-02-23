@@ -25,7 +25,7 @@ import {
   Refresh as RefreshIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
-import { planeApi } from '../services/api';
+import { planeApi, getImageUrl } from '../services/api';
 
 const PlanesTable = () => {
   const [planes, setPlanes] = useState([]);
@@ -33,13 +33,54 @@ const PlanesTable = () => {
   const [error, setError] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [planeToDelete, setPlaneToDelete] = useState(null);
+  const [rowCount, setRowCount] = useState(0);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 10,
+  });
+  const [sortModel, setSortModel] = useState([{ field: 'id', sort: 'asc' }]);
 
-  const fetchPlanes = async () => {
+  const handleSortModelChange = (newSortModel) => {
+    // If user tries to clear sort (third click), keep the field and toggle direction
+    if (!newSortModel || newSortModel.length === 0) {
+      const currentField = sortModel[0]?.field || 'id';
+      const currentSort = sortModel[0]?.sort || 'asc';
+      // Toggle between asc and desc only (no unsorted state)
+      const newSort = currentSort === 'asc' ? 'desc' : 'asc';
+      setSortModel([{ field: currentField, sort: newSort }]);
+    } else {
+      setSortModel(newSortModel);
+    }
+  };
+
+  const fetchPlanes = async (page = 0, pageSize = 10, sort = sortModel) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await planeApi.getAll();
-      setPlanes(data);
+      const safePage = page || 0;
+      const safePageSize = pageSize || 10;
+      const limit = safePageSize;
+      const offset = safePage * safePageSize;
+      
+      // Build ordering string from sort model (format: field.asc or field.desc)
+      let ordering = null;
+      if (sort && sort.length > 0) {
+        const { field, sort: direction } = sort[0];
+        ordering = `${field}.${direction}`;
+      }
+      
+      const data = await planeApi.getAll({}, limit, offset, ordering);
+      // Handle both paginated response formats: { results: [], count: number } or plain array
+      if (data && Array.isArray(data.results)) {
+        setPlanes(data.results);
+        setRowCount(data.count || data.results.length);
+      } else if (Array.isArray(data)) {
+        setPlanes(data);
+        setRowCount(data.length);
+      } else {
+        setPlanes([]);
+        setRowCount(0);
+      }
     } catch (err) {
       setError('Failed to fetch planes. Please try again later.');
       console.error(err);
@@ -49,8 +90,8 @@ const PlanesTable = () => {
   };
 
   useEffect(() => {
-    fetchPlanes();
-  }, []);
+    fetchPlanes(paginationModel.page, paginationModel.pageSize, sortModel);
+  }, [paginationModel, sortModel]);
 
   const handleDeleteClick = (id) => {
     setPlaneToDelete(id);
@@ -92,16 +133,19 @@ const PlanesTable = () => {
       filterable: false,
       align: 'center',
       headerAlign: 'center',
-      renderCell: (params) => (
-        <Avatar
-          src={params.value}
-          alt={params.row.name || 'Plane'}
-          variant="rounded"
-          sx={{ width: 60, height: 60 }}
-        >
-          {!params.value && <span role="img" aria-label="plane">✈️</span>}
-        </Avatar>
-      ),
+      renderCell: (params) => {
+        const imageUrl = getImageUrl(params.value);
+        return (
+          <Avatar
+            src={imageUrl}
+            alt={params.row.name || 'Plane'}
+            variant="rounded"
+            sx={{ width: 60, height: 60 }}
+          >
+            {!imageUrl && <span role="img" aria-label="plane">✈️</span>}
+          </Avatar>
+        );
+      },
     },
     {
       field: 'name',
@@ -204,7 +248,7 @@ const PlanesTable = () => {
           </Typography>
           <Box>
             <Tooltip title="Refresh">
-              <IconButton onClick={fetchPlanes} disabled={loading}>
+              <IconButton onClick={() => fetchPlanes(paginationModel.page, paginationModel.pageSize)} disabled={loading}>
                 <RefreshIcon />
               </IconButton>
             </Tooltip>
@@ -227,14 +271,13 @@ const PlanesTable = () => {
             rows={planes}
             columns={columns}
             loading={loading}
-            initialState={{
-              pagination: {
-                paginationModel: { page: 0, pageSize: 10 },
-              },
-              sorting: {
-                sortModel: [{ field: 'id', sort: 'asc' }],
-              },
-            }}
+            rowCount={rowCount}
+            paginationMode="server"
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            sortingMode="server"
+            sortModel={sortModel}
+            onSortModelChange={handleSortModelChange}
             pageSizeOptions={[5, 10, 25, 50]}
             checkboxSelection
             disableRowSelectionOnClick
