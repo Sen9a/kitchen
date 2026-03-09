@@ -28,5 +28,5 @@ class PlaneService(BaseService[PlaneCreate | PlaneRead | PlaneUpdate | PlaneDeta
         filters = {"filters": {"name": name},
                    "limit": 1,
                    "offset": 0}
-        result = await super().get_all(**filters)
+        result = await self.manager.get(**filters)
         return next(iter(result), None)

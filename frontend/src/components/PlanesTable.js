@@ -210,6 +210,40 @@ const PlanesTable = () => {
       ),
     },
     {
+      field: 'squads',
+      headerName: 'Squads',
+      width: 200,
+      renderCell: (params) => {
+        const squads = params.value || [];
+        if (squads.length === 0) {
+          return <Chip label="N/A" size="small" variant="outlined" disabled />;
+        }
+        return (
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              gap: 0.5, 
+              flexWrap: 'wrap',
+              maxHeight: 50,
+              overflow: 'auto',
+              alignItems: 'center',
+              py: 0.5,
+            }}
+          >
+            {squads.map((squad) => (
+              <Tooltip key={squad.id} title={squad.name}>
+                <Avatar
+                  sx={{ width: 32, height: 32, fontSize: 14, bgcolor: 'primary.main', flexShrink: 0 }}
+                >
+                  {squad.name.charAt(0).toUpperCase()}
+                </Avatar>
+              </Tooltip>
+            ))}
+          </Box>
+        );
+      },
+    },
+    {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',

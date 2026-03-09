@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_serializer
 from .drone_type import DroneType
 from .video_type import VideoType
 from src.const import Plane as PlaneConst
@@ -15,8 +15,8 @@ class Plane(PlaneBase):
 
 class PlaneCreate(BaseModel):
     name: str
-    type: int | None = None
-    communication: int | None = None
+    drone_type_id: int | None = None
+    communication_id: int | None = None
     video_type_id: int | None = None
     squads: list[int] = []
 
@@ -25,7 +25,7 @@ class PlaneUpdate(PlaneCreate):
 
 
 class PlaneRead(BaseModel):
-    name: str | None = None
+    name_ilike: str | None = None
     type: int | None = None
     communication: int | None = None
     video_type_id: int | None = None

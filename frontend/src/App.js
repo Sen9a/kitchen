@@ -7,16 +7,12 @@ import {
   Container,
   Box,
   CssBaseline,
-  Button,
 } from '@mui/material';
-import { Flight as FlightIcon, Settings as SettingsIcon } from '@mui/icons-material';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import PlanesTable from './components/PlanesTable';
+import { Flight as FlightIcon } from '@mui/icons-material';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminPage from './components/AdminPage';
 
 function Navigation() {
-  const location = useLocation();
-  
   return (
     <AppBar position="static" elevation={1}>
       <Toolbar>
@@ -24,24 +20,6 @@ function Navigation() {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Kitchen - Warehouse Management System
         </Typography>
-        <Button
-          color="inherit"
-          component={Link}
-          to="/"
-          sx={{ mr: 1 }}
-          variant={location.pathname === '/' ? 'outlined' : 'text'}
-        >
-          Planes
-        </Button>
-        <Button
-          color="inherit"
-          component={Link}
-          to="/admin"
-          startIcon={<SettingsIcon />}
-          variant={location.pathname === '/admin' ? 'outlined' : 'text'}
-        >
-          Admin
-        </Button>
       </Toolbar>
     </AppBar>
   );
@@ -58,8 +36,7 @@ function App() {
         {/* Main Content */}
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4, flex: 1 }}>
           <Routes>
-            <Route path="/" element={<PlanesTable />} />
-            <Route path="/admin" element={<AdminPage />} />
+            <Route path="/" element={<AdminPage />} />
           </Routes>
         </Container>
 

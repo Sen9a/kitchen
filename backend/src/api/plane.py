@@ -8,17 +8,17 @@ from src.validation import validate_plane
 
 router = APIRouter(prefix="/planes", tags=["planes"])
 
-@router.post("/", response_model=PlaneCreate, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=Plane, status_code=status.HTTP_201_CREATED)
 async def create_plane(name: str = Form(...),
-                       plane_type: int | None = Form(...),
-                       communication: int | None = Form(...),
-                       video_type: int | None = Form(None),
+                       drone_type_id: int | None = Form(...),
+                       communication_id: int | None = Form(...),
+                       video_type_id: int | None = Form(None),
                        image: UploadFile | None = File(None),
                        squad_id: list[int] | None = Form(None)):
     plane = PlaneCreate(name=name,
-                        type=plane_type,
-                        communication=communication,
-                        video_type_id=video_type,
+                        drone_type_id=drone_type_id,
+                        communication_id=communication_id,
+                        video_type_id=video_type_id,
                         squads=squad_id)
     service = PlaneService()
     errors = await validate_plane(plane)

@@ -15,8 +15,8 @@ class Plane(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=True, unique=True)
-    type: Mapped[int] = mapped_column(ForeignKey("drones_type.id"), nullable=True)
-    communication: Mapped[int] = mapped_column(ForeignKey("communication_type.id"), nullable=True)
+    drone_type_id: Mapped[int] = mapped_column(ForeignKey("drones_type.id"), nullable=True)
+    communication_id: Mapped[int] = mapped_column(ForeignKey("communication_type.id"), nullable=True)
     image_url: Mapped[str] = mapped_column(String(500), nullable=True)
 
     video_type_id: Mapped[int] = mapped_column(ForeignKey("video_type.id"), nullable=True)

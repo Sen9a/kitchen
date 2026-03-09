@@ -1,6 +1,8 @@
 import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+console.log('REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+console.log('API_BASE_URL:', API_BASE_URL);
 
 // Helper function to build full image URL
 // Expects relative path like "planes/123.jpg" or "/static/planes/123.jpg"
@@ -77,13 +79,23 @@ export const planeApi = {
 
   create: async (planeData, image = null) => {
     try {
+      console.log('planeApi.create called with:', planeData);
       const formData = new FormData();
       formData.append('name', planeData.name);
-      if (planeData.type) formData.append('plane_type', planeData.type);
-      if (planeData.communication) formData.append('communication', planeData.communication);
+      if (planeData.type) formData.append('drone_type_id', planeData.type);
+      if (planeData.communication) formData.append('communication_id', planeData.communication);
       if (planeData.video_type_id) formData.append('video_type', planeData.video_type_id);
-      if (planeData.squad) formData.append('squad', planeData.squad);
+      if (planeData.squads && planeData.squads.length > 0) {
+        planeData.squads.forEach((squadId) => {
+          formData.append('squad_id', squadId);
+        });
+      }
       if (image) formData.append('image', image);
+
+      // Log FormData contents
+      for (let [key, value] of formData.entries()) {
+        console.log(`FormData: ${key} = ${value}`);
+      }
 
       const response = await apiClient.post('/planes/', formData, {
         headers: {
@@ -103,10 +115,14 @@ export const planeApi = {
       if (image) {
         const formData = new FormData();
         formData.append('name', planeData.name);
-        if (planeData.type) formData.append('plane_type', planeData.type);
-        if (planeData.communication) formData.append('communication', planeData.communication);
+        if (planeData.type) formData.append('drone_type_id', planeData.type);
+        if (planeData.communication) formData.append('communication_id', planeData.communication);
         if (planeData.video_type_id) formData.append('video_type', planeData.video_type_id);
-        if (planeData.squad) formData.append('squad', planeData.squad);
+        if (planeData.squads && planeData.squads.length > 0) {
+          planeData.squads.forEach((squadId) => {
+            formData.append('squad_id', squadId);
+          });
+        }
         formData.append('image', image);
         
         const response = await apiClient.put(`/planes/${id}`, formData, {

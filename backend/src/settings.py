@@ -7,7 +7,9 @@ class Settings(BaseSettings):
     DB_NAME: str = "kitchen"
     DB_PORT: int = 5432
     DB_HOST: str = "0.0.0.0"
-    IMAGE_PATH: str = "images/"
+    PLANE_PATH: str = "static/boards"
+    AVATAR_PATH: str = "static/avatars"
+    STORAGE_PATH: str = "/home/sen9a/git/kitchen/"
 
     @property
     def DB_URL(self) -> str:

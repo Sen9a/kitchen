@@ -13,9 +13,11 @@ class VideoTypeUpdate(VideoTypeBase):
     pass
 
 
-class VideoTypeRead(VideoTypeBase):
+class VideoTypeRead(BaseModel):
+    name: str | None = None
     limit: int = 100
     offset: int = 0
+    order_by: list[str] = []
 
 
 class VideoType(VideoTypeBase):

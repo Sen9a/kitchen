@@ -1,5 +1,6 @@
 import os
-from dataclasses import dataclass
+import uuid
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import aiofiles
@@ -7,17 +8,26 @@ from fastapi import UploadFile
 from starlette.concurrency import run_in_threadpool
 
 from src import settings
+from src.managers import FileManager
 
 
 @dataclass
 class FilesService:
-    file_url: Path = Path(settings.IMAGE_PATH)
+    storage_path: Path = Path(settings.STORAGE_PATH)
+    avatar_path: Path = Path(settings.AVATAR_PATH)
+    plane_path: Path = Path(settings.PLANE_PATH)
+    manager: 'FileManager' = field(default_factory=FileManager)
 
-    async def get_file_url(self, file_name: str) -> Path:
-        return self.file_url / file_name
+    @staticmethod
+    async def generate_file_name() -> str:
+        return str(uuid.uuid4())
+
+    @staticmethod
+    async def get_file_extension(file: UploadFile):
+        return Path(file.filename).suffix
 
     async def put_file(self, upload_file: UploadFile) -> Path:
-        file = await self.get_file_url(upload_file.filename)
+        file = await self.get_file_url()
         async with aiofiles.open(str(file), "wb") as f:
             while content := await upload_file.read(1024 * 1024):
                 await f.write(content)

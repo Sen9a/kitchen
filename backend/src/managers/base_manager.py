@@ -53,7 +53,7 @@ class FilterOperations:
 
     @staticmethod
     def i_like(f, v) -> bool:
-        return f.ilike(v)
+        return f.ilike(f"{v}%")
 
     @classmethod
     def i_like_cast(cls, f, v):
@@ -114,24 +114,25 @@ class BaseManager:
              query = query.where(*await self.build_complex_filters(filters))
         return query
 
-    async def sort_by_field(self, query: 'Query', field_: str = "name.asc") -> 'Query':
+    async def sort_by_field(self, query: 'Query',
+                            field_: str = "name.asc",
+                            joined_fields: dict[str, Any] = None) -> 'Query':
         """Orders by given field."""
         order = "asc"
         if "." in field_:
             field_, order = field_.split(".")
-
         field_attr = getattr(self.model, field_, None)
-        if field_attr is None:
+        if joined_fields and field_ in joined_fields:
+            field_attr = joined_fields[field_]
+        elif field_attr is None:
             if field_ in query.selectable.columns:
                 field_attr = query.selectable.columns.get(field_)
             else:
                 raise ValueError(f'No field: {field_}')
-
         if order == "desc":
             query = query.order_by(nullslast(field_attr.desc()))
         else:
             query = query.order_by(nullslast(field_attr))
-
         return query
 
     async def create(self, payload: dict[str, Any]) -> Any:

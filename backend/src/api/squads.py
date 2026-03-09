@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from typing_inspection.introspection import AnnotationSource
 
 from src.schemas.squads import Squad, SquadCreate, SquadUpdate, SquadRead
 from src.services import SquadsService
@@ -11,7 +14,7 @@ async def create_squad(squad: SquadCreate):
     return await service.create(squad)
 
 @router.get("/", response_model=list[Squad])
-async def read_squads(filter_payload: SquadRead | None = Depends(SquadRead)):
+async def read_squads(filter_payload: Annotated[SquadRead, Query()]):
     service = SquadsService()
     return await service.get_all(filter_payload)
 
